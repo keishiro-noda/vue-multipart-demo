@@ -38,12 +38,13 @@
         </div>
       </div>
     </div>
-  </template>
+</template>
   
-  <script>
+<script>
   import { VueUploadComponent } from 'vue-upload-component';
   
   export default {
+    name: "VueUpload",
     components: {
       VueUploadComponent
     },
@@ -75,9 +76,9 @@
       }
     }
   };
-  </script>
+</script>
   
-  <style>
+<style>
   .file-uploads {
     overflow: hidden;
     position: relative;
@@ -112,5 +113,5 @@
   .thumb {
     width: 50px;
   }
-  </style>
+</style>
   
