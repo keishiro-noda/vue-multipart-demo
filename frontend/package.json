@@ -10,6 +10,7 @@
     "start": "vite"
   },
   "dependencies": {
+    "@boindil/vue-file-agent-next": "^1.0.5",
     "@mdi/font": "5.9.55",
     "@xkeshi/image-compressor": "^0.5.3",
     "cropperjs": "^1.5.13",

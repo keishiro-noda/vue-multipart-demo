@@ -1,16 +1,19 @@
 <template>
   <div id="app">
-    <FileAgent msg="Hello Vue in CodeSandbox!"/>
+    <FileAgent msg="vue-file-agent-next example"/>
+    <UploadComponent />
   </div>
 </template>
 
 <script>
 import FileAgent from "./components/FileAgent.vue";
+// import UploadComponent from "./components/UploadComponent.vue";
 
 export default {
   name: "App",
   components: {
-    FileAgent
+    FileAgent,
+    // UploadComponent
   }
 };
 </script>

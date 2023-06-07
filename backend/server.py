@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
@@ -22,9 +22,12 @@ thread = 0
 
 
 @app.post("/multipart")
-def signin(data):
-    print(data)
-    return 
+async def upload_chunk(chunk):
+    # チャンクを保存または処理する必要のある任意の処理を実行します
+    # この例では、チャンクの名前を表示しています
+    print("received")
+    print("Received chunk:", chunk.filename)
+    return {"message": "Chunk uploaded"}
 
 
 
@@ -33,3 +36,4 @@ if __name__ == "__main__":
     uvicorn.run(
         "__main__:app", port=8000, reload=True, host='0.0.0.0'
     )
+    print("start")

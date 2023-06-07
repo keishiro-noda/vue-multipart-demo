@@ -17,6 +17,7 @@
           <div class="example-btn">
             <VueUploadComponent
               class="btn btn-primary"
+              post-action="/multipart"
               :multiple="true"
               v-model="files"
               @input-filter="inputFilter"
