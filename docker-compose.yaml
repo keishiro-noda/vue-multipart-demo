@@ -1,0 +1,44 @@
+version: '3'
+services:
+  test_backend:
+    build:
+      context: ./backend/
+      dockerfile: ./Dockerfile
+    container_name: 'test_backend'
+    working_dir: '/home/guest/my-vue-app/backend'
+    tty: true
+    ports:
+      - 8000:8000
+    volumes:
+      - $PWD/backend:/home/guest/my-vue-app/backend
+    environment:
+      TZ: Asia/Tokyo
+    command: bash
+    # networks:
+    #   - test-network
+
+  test_frontend:
+    build:
+      context: ./frontend/
+      dockerfile: ./Dockerfile
+    container_name: 'test_frontend'
+    tty: true
+    volumes:
+      - $PWD/frontend:/home/guest/my-vue-app/frontend
+    depends_on: 
+      - test_backend
+    command: sh
+    ports:
+      - 3000:3000
+    # networks:
+    #   - test-network
+
+
+# networks:
+#   default:
+#     external:
+#       name: bridge
+#   test-network:
+#     name: test-network
+#     driver: bridge
+#     external: true
