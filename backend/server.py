@@ -1,8 +1,17 @@
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import shutil
+import boto3
 
 
+
+s3 = boto3.client(
+        "s3",
+        endpoint_url="http://s3:9000",
+        aws_access_key_id="root",
+        aws_secret_access_key="adminpass",
+    )
 
 app = FastAPI()
 
@@ -21,13 +30,16 @@ app.add_middleware(
 
 
 @app.post("/multipart")
-async def upload_chunk(files: list[UploadFile]):
+async def upload_chunk(file: UploadFile = File(...)):
     print("received")
-    res = []
-    for file in files:
-        res.append(file.filename)
-    print("Received chunk:", res)
-    return res
+
+    save_path = f"uploads/{file.filename}"
+    with open(save_path, "wb") as f:
+            shutil.copyfileobj(file.file, f)
+
+    s3.upload_file(save_path, "user_files", file.filename)
+    print("Received chunk")
+    return
 
 
 

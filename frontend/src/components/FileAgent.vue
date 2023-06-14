@@ -1,82 +1,59 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
+  <div>
     <VueFileAgent
-      ref="profilePicRef"
+      :uploadUrl="'http://localhost:8000/multipart'"
+      :uploadHeaders="{}"
       :multiple="true"
-      v-model="profilePic"
-      @select="onSelect($event)"
+      :deletable="true"
+      :editable="true"
+      :meta="true"
+      :maxFiles="8"
+      :helpText="'Select files'"
+      :errorText="{
+        type: 'Please select images, videos, pdf or zip files',
+        size: 'You selected a larger file!',
+      }"
+      :thumbnailSize="120"
+      :theme="'list'"
+      v-model="fileRecords"
     ></VueFileAgent>
-    <button @click="uploadChunks">Upload</button>
   </div>
 </template>
 
 <script>
-import { toRaw } from 'vue';
-import axios from "axios";
 export default {
   name: "FileAgent",
   data() {
     return {
-      fileChunks: [],
-      uploadUrl: "http://localhost:8000/multipart",
-      uploaded: false,
-      uploadHeaders: {},
-      profilePic: null,
-      api: axios.create({ baseURL: "http://localhost:8000" }),
+      fileRecords: []
     };
-  },
-  props: {
-    msg: String,
-  },
-  methods: {
-    async uploadChunks() {
-      const chunk = []
-      for (let i = 0; i < this.fileChunks.length; i++) {
-        chunk.push(toRaw(this.fileChunks[i])[0])
-      }
-      await this.uploadChunk(chunk);
-       console.log('All chunks uploaded');
-    },
-    async uploadChunk(chunk) {
-      let formData = new FormData();
-      for (let i = 0; i < chunk.length; i++) {
-        formData.append('files', chunk[i].file);
-      }
-
-      try {
-        const response = await this.api.post('/multipart', formData );
-        console.log("posted")
-        const data = response.data;
-        console.log('Chunk uploaded:', data);
-      } catch (error) {
-        console.error('Error uploading chunk:', error);
-      }
-    },
-    onSelect(fileRecords){
-      console.log('onSelect', fileRecords);
-      this.uploaded = false;
-      this.fileChunks.push(fileRecords)
-    }
   },
   
 };
 </script>
 
 <style scoped>
-h3 {
-  margin: 40px 0 0;
+#profile-pic-demo .drop-help-text {
+  display: none;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+#profile-pic-demo .is-drag-over .drop-help-text {
+  display: block;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
+#profile-pic-demo .profile-pic-upload-block {
+  border: 2px dashed transparent;
+  padding: 20px;
+  padding-top: 0;
 }
-a {
-  color: #42b983;
+
+#profile-pic-demo .is-drag-over.profile-pic-upload-block {
+  border-color: #AAA;
+}
+#profile-pic-demo .vue-file-agent {
+  width: 180px;
+  float: left;
+  margin: 0 15px 5px 0;
+  border: 0;
+  box-shadow: none;
 }
 </style>
 

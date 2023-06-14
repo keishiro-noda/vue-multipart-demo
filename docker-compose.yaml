@@ -14,8 +14,6 @@ services:
     environment:
       TZ: Asia/Tokyo
     command: bash
-    # networks:
-    #   - test-network
 
   test_frontend:
     build:
@@ -30,15 +28,18 @@ services:
     command: sh
     ports:
       - 3000:3000
-    # networks:
-    #   - test-network
 
 
-# networks:
-#   default:
-#     external:
-#       name: bridge
-#   test-network:
-#     name: test-network
-#     driver: bridge
-#     external: true
+  s3:
+    image: minio/minio:latest
+    container_name: s3
+    environment:
+      MINIO_ROOT_USER: root
+      MINIO_ROOT_PASSWORD: adminpass
+    entrypoint: bash
+    command: -c "mkdir -p /export/user_files && /opt/bin/minio server /export --address :9000 --console-address :9001"
+    volumes:
+      - ./minio_data:/export # Persistence of MinIO storage
+    ports:
+      - '9000:9000'
+      - '9001:9001'
