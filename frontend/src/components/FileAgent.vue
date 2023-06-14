@@ -3,15 +3,17 @@
     <h1>{{ msg }}</h1>
     <VueFileAgent
       ref="profilePicRef"
-      :multiple="false"
-      @select="onSelect($event)"
+      :multiple="true"
       v-model="profilePic"
+      @select="onSelect($event)"
     ></VueFileAgent>
-    <button @click="upload">Upload</button>
+    <button @click="uploadChunks">Upload</button>
   </div>
 </template>
 
 <script>
+import { toRaw } from 'vue';
+import axios from "axios";
 export default {
   name: "FileAgent",
   data() {
@@ -19,61 +21,48 @@ export default {
       fileChunks: [],
       uploadUrl: "http://localhost:8000/multipart",
       uploaded: false,
+      uploadHeaders: {},
+      profilePic: null,
+      api: axios.create({ baseURL: "http://localhost:8000" }),
     };
   },
   props: {
     msg: String,
   },
   methods: {
-    handleFileChange(files) {
-      this.fileChunks = files;
-    },
-    upload: function(){
-      var self = this;
-      this.$refs.profilePicRef.upload(this.uploadUrl, this.uploadHeaders, [this.profilePic]).then(function(){
-        self.uploaded = true;
-        setTimeout(function(){
-          // self.profilePic.progress(0);          
-        }, 500);
-      });
-    },
-    onSelect: function(fileRecords){
-      console.log('onSelect', fileRecords);
-      this.uploaded = false;
-    },
     async uploadChunks() {
-      const totalChunks = this.fileChunks.length;
-      console.log(this.fileChunks)
-      await this.uploadChunk(this.fileChunks);
-    //   for (let i = 0; i < totalChunks; i++) {
-    //     const chunk = this.fileChunks[i];
-    //     console.log(chunk)
-    //     await this.uploadChunk(chunk);
-    //   }
-    //   console.log('All chunks uploaded');
+      const chunk = []
+      for (let i = 0; i < this.fileChunks.length; i++) {
+        chunk.push(toRaw(this.fileChunks[i])[0])
+      }
+      await this.uploadChunk(chunk);
+       console.log('All chunks uploaded');
     },
     async uploadChunk(chunk) {
-      const formData = new FormData();
-      formData.append('chunk', chunk.file);
-      console.log(formData)
-      
+      let formData = new FormData();
+      for (let i = 0; i < chunk.length; i++) {
+        formData.append('files', chunk[i].file);
+      }
+
       try {
-        const response = await fetch('http://localhost:8000/multipart', {
-          method: 'POST',
-          body: formData,
-        });
+        const response = await this.api.post('/multipart', formData );
         console.log("posted")
-        const data = await response.json();
+        const data = response.data;
         console.log('Chunk uploaded:', data);
       } catch (error) {
         console.error('Error uploading chunk:', error);
       }
     },
+    onSelect(fileRecords){
+      console.log('onSelect', fileRecords);
+      this.uploaded = false;
+      this.fileChunks.push(fileRecords)
+    }
   },
+  
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h3 {
   margin: 40px 0 0;

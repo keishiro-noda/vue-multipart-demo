@@ -1,19 +1,18 @@
 <template>
   <div id="app">
     <FileAgent msg="vue-file-agent-next example"/>
-    <UploadComponent />
+    <!-- <UploadComponent /> -->
   </div>
 </template>
 
 <script>
 import FileAgent from "./components/FileAgent.vue";
-// import UploadComponent from "./components/UploadComponent.vue";
-
+import UploadComponent from "./components/UploadComponent.vue";
 export default {
   name: "App",
   components: {
     FileAgent,
-    // UploadComponent
+    UploadComponent
   }
 };
 </script>
