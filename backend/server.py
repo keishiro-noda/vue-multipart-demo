@@ -30,7 +30,7 @@ app.add_middleware(
 
 
 @app.post("/multipart")
-async def upload_chunk(file: UploadFile = File(...)):
+async def upload_chunk(file: UploadFile):
     print("received")
 
     save_path = f"uploads/{file.filename}"

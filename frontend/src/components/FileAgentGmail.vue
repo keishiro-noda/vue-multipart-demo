@@ -1,7 +1,6 @@
 <template>
     <div class="vfa-demo bg-light pt-3">
         <VueFileAgent
-          class="upload-block"
           ref="vfaDemoRef"
           :uploadUrl="'http://localhost:8000/multipart'"
           :uploadHeaders="{}"
@@ -10,47 +9,147 @@
           :theme="'list'"
           v-model="fileRecords"
         >
-          <template v-slot:file-preview="slotProps">
-            <div :key="slotProps.index" class="grid-box-item file-row">
-              <button type="button" class="close remove" aria-label="Remove" @click="removeFileRecord(slotProps.fileRecord)">
-                <span aria-hidden="true">&times;</span>
-              </button>
-              <div class="file-progress" :class="{'completed': slotProps.fileRecord.progress() == 100}">
-                <div class="file-progress-bar" role="progressbar" :style="{width: slotProps.fileRecord.progress() + '%'}"></div>
-              </div>
-              <strong>{{ slotProps.fileRecord.name() }}</strong> <span class="text-muted">({{ slotProps.fileRecord.size() }})</span>
+        <!-- <template v-slot:file-preview="slotProps">
+          <v-list-item
+            v-for="(item, index) in slotProps"
+            :key="index"
+          >
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item>
+        </template> -->
+        <template v-slot:file-preview-new>
+          <div  class="d-flex justify-space-around" key="new">
+            <!-- <a href="#" class="">Select files</a> or drag & drop here -->
+            <svg-icon type="mdi" href="#" class="" :path="path"></svg-icon>
+          </div>
+        </template >
+        <template v-slot:after-outer>
+          <div title="after-outer">
+            <div class="drop-help-text">
+              <p>Drop here</p>
             </div>
-          </template >
-          <template v-slot:file-preview-new>
-            <div class="text-left my-3" key="new">
-              <a href="#" class="">Select files</a> or drag & drop here
-            </div>
-          </template >
-          <template v-slot:after-outer>
-            <div title="after-outer">
-              <div class="drop-help-text">
-                <p>Drop here</p>
-              </div>
-            </div>
-          </template >
+          </div>
+        </template >
+        
         </VueFileAgent>
+        <v-list v-slot:file-preview="slotProps">
+          <v-list-item :key="slotProps.index" >
+            <v-btn icon class="close remove" aria-label="Remove" @click="removeFileRecord(slotProps.fileRecord)">
+            </v-btn>
+            <v-list-content :class="{'completed': slotProps.fileRecord.progress() == 100}">
+              <div class="file-progress-bar" role="progressbar" :style="{width: slotProps.fileRecord.progress() + '%'}"></div>
+            </v-list-content>
+            <v-list-title>{{ slotProps.fileRecord.name() }}</v-list-title> <v-list-content>({{ slotProps.fileRecord.size() }})</v-list-content>
+          </v-list-item>
+      </v-list>
+
+
+        <v-menu light max-width="1000">
+            <template v-slot:activator="{ props }">
+              <v-btn
+                rounded="pill"
+                class="transparent"
+                icon=""
+                size="x-small"
+                dark
+                elevation="0"
+                v-bind="props"
+              >
+  
+                <i class="tio- text-primary text-20">fileupload</i>
+              </v-btn>
+            </template>
+            <div class="fileupload-menu">
+              <h4 class="ma-3 text-subtitle-2 font-weight-bold">File Uploads</h4>
+              <v-divider></v-divider>
+              <v-list >
+                <v-list-item-group>
+                <v-list-item>
+                  <VueFileAgent
+                    class="upload-block"
+                    ref="vfaDemoRef"
+                    :uploadUrl="'http://localhost:8000/multipart'"
+                    :uploadHeaders="{}"
+                    :multiple="true"
+                    :deletable="true"
+                    :theme="'list'"
+                    v-model="fileRecords"
+                    @selected="handleFileSelected"
+                  >
+                  <template v-slot:file-preview-new>
+                    <div  class="d-flex justify-space-around" key="new">
+                      <!-- <a href="#" class="">Select files</a> or drag & drop here -->
+                      <svg-icon type="mdi" href="#" class="" :path="path"></svg-icon>
+                    </div>
+                  </template >
+                  <template v-slot:after-outer>
+                    <div title="after-outer">
+                      <div class="drop-help-text">
+                        <p>Drop here</p>
+                      </div>
+                    </div>
+                  </template >
+                </VueFileAgent>
+                </v-list-item>
+                    <!-- <template v-slot:file-preview="slotProps">
+                      <v-list-item :key="slotProps.index" class="grid-box-item file-row">
+                        <v-btn icon class="close remove" aria-label="Remove" @click="removeFileRecord(slotProps.fileRecord)">
+                          <span aria-hidden="true">&times;</span>
+                        </v-btn>
+                        <div class="file-progress" :class="{'completed': slotProps.fileRecord.progress() == 100}">
+                          <div class="file-progress-bar" role="progressbar" :style="{width: slotProps.fileRecord.progress() + '%'}"></div>
+                        </div>
+                        <strong>{{ slotProps.fileRecord.name() }}</strong> <span class="text-muted">({{ slotProps.fileRecord.size() }})</span>
+                      </v-list-item>
+                    </template > -->
+                    <v-list-item v-slot:file-preview="slotProps">
+                    <div :key="slotProps.index" >
+                      <v-list-title>{{ slotProps.fileRecord.name() }}</v-list-title> <v-list-content>({{ slotProps.fileRecord.size() }})</v-list-content>
+                    </div>
+                </v-list-item>
+              </v-list-item-group>
+                </v-list>
+            </div>
+          </v-menu>
     </div>
 </template>
   
 <script>
-  export default {
-    name: "FileAgent",
-    data(){
-        return {
-            fileRecords: []
-        }
-    },
-    methods: {
-        removeFileRecord: function(fileRecord){
-            return this.$refs.vfaDemoRef.removeFileRecord(fileRecord);
-        },
-    }
-  };
+import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiFileUpload } from '@mdi/js';
+export default {
+  name: "FileAgent",
+  components: {
+    SvgIcon
+  },
+  data(){
+      return {
+          path: mdiFileUpload,
+          fileRecords: [],
+          fileAgentProps: null,
+          files: [],
+          items: [
+            { title: 'Click Me1' },
+            { title: 'Click Me2' },
+            { title: 'Click Me3' },
+            { title: 'Click Me4' },
+          ],
+          slots: []
+      }
+  },
+  methods: {
+      removeFileRecord: function(fileRecord){
+          return this.$refs.vfaDemoRef.removeFileRecord(fileRecord);
+      },
+      handleFileSelected(slotProps) {
+        this.slots = slotProps; 
+      },
+      handleFileAgentProps(slotProps) {
+        console.log(slotProps)
+        this.fileAgentProps = slotProps;
+      }
+  }
+};
 </script>
   
 <style>

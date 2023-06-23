@@ -1,18 +1,22 @@
 <template>
   <div id="app">
-    <FileAgent />
+    <!-- <FileAgent /> -->
     <!-- <UploadComponent /> -->
+    <Pond />
   </div>
 </template>
 
 <script>
 // import FileAgent from "./components/FileAgentPreloading.vue";
-// import UploadComponent from "./components/UploadComponent.vue";
+import UploadComponent from "./components/UploadComponent.vue";
 import FileAgent from "./components/FileAgentGmail.vue";
+import Pond from "./components/FilePond.vue"
 export default {
   name: "App",
   components: {
-    FileAgent
+    FileAgent,
+    UploadComponent,
+    Pond
   }
 };
 </script>
