@@ -2,35 +2,13 @@
     <div class="vfa-demo bg-light pt-3">
         <VueFileAgent
           ref="vfaDemoRef"
-          :uploadUrl="'http://localhost:8000/multipart'"
           :uploadHeaders="{}"
           :multiple="true"
           :deletable="true"
           :theme="'list'"
           v-model="fileRecords"
+          @select="onSelect($event)"
         >
-        <!-- <template v-slot:file-preview="slotProps">
-          <v-list-item
-            v-for="(item, index) in slotProps"
-            :key="index"
-          >
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item>
-        </template> -->
-        <template v-slot:file-preview-new>
-          <div  class="d-flex justify-space-around" key="new">
-            <!-- <a href="#" class="">Select files</a> or drag & drop here -->
-            <svg-icon type="mdi" href="#" class="" :path="path"></svg-icon>
-          </div>
-        </template >
-        <template v-slot:after-outer>
-          <div title="after-outer">
-            <div class="drop-help-text">
-              <p>Drop here</p>
-            </div>
-          </div>
-        </template >
-        
         </VueFileAgent>
         <v-list v-slot:file-preview="slotProps">
           <v-list-item :key="slotProps.index" >
@@ -42,81 +20,13 @@
             <v-list-title>{{ slotProps.fileRecord.name() }}</v-list-title> <v-list-content>({{ slotProps.fileRecord.size() }})</v-list-content>
           </v-list-item>
       </v-list>
-
-
-        <v-menu light max-width="1000">
-            <template v-slot:activator="{ props }">
-              <v-btn
-                rounded="pill"
-                class="transparent"
-                icon=""
-                size="x-small"
-                dark
-                elevation="0"
-                v-bind="props"
-              >
-  
-                <i class="tio- text-primary text-20">fileupload</i>
-              </v-btn>
-            </template>
-            <div class="fileupload-menu">
-              <h4 class="ma-3 text-subtitle-2 font-weight-bold">File Uploads</h4>
-              <v-divider></v-divider>
-              <v-list >
-                <v-list-item-group>
-                <v-list-item>
-                  <VueFileAgent
-                    class="upload-block"
-                    ref="vfaDemoRef"
-                    :uploadUrl="'http://localhost:8000/multipart'"
-                    :uploadHeaders="{}"
-                    :multiple="true"
-                    :deletable="true"
-                    :theme="'list'"
-                    v-model="fileRecords"
-                    @selected="handleFileSelected"
-                  >
-                  <template v-slot:file-preview-new>
-                    <div  class="d-flex justify-space-around" key="new">
-                      <!-- <a href="#" class="">Select files</a> or drag & drop here -->
-                      <svg-icon type="mdi" href="#" class="" :path="path"></svg-icon>
-                    </div>
-                  </template >
-                  <template v-slot:after-outer>
-                    <div title="after-outer">
-                      <div class="drop-help-text">
-                        <p>Drop here</p>
-                      </div>
-                    </div>
-                  </template >
-                </VueFileAgent>
-                </v-list-item>
-                    <!-- <template v-slot:file-preview="slotProps">
-                      <v-list-item :key="slotProps.index" class="grid-box-item file-row">
-                        <v-btn icon class="close remove" aria-label="Remove" @click="removeFileRecord(slotProps.fileRecord)">
-                          <span aria-hidden="true">&times;</span>
-                        </v-btn>
-                        <div class="file-progress" :class="{'completed': slotProps.fileRecord.progress() == 100}">
-                          <div class="file-progress-bar" role="progressbar" :style="{width: slotProps.fileRecord.progress() + '%'}"></div>
-                        </div>
-                        <strong>{{ slotProps.fileRecord.name() }}</strong> <span class="text-muted">({{ slotProps.fileRecord.size() }})</span>
-                      </v-list-item>
-                    </template > -->
-                    <v-list-item v-slot:file-preview="slotProps">
-                    <div :key="slotProps.index" >
-                      <v-list-title>{{ slotProps.fileRecord.name() }}</v-list-title> <v-list-content>({{ slotProps.fileRecord.size() }})</v-list-content>
-                    </div>
-                </v-list-item>
-              </v-list-item-group>
-                </v-list>
-            </div>
-          </v-menu>
     </div>
 </template>
   
 <script>
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiFileUpload } from '@mdi/js';
+import Resumable from 'resumablejs';
+import * as tus from 'tus-js-client';
 export default {
   name: "FileAgent",
   components: {
@@ -124,17 +34,8 @@ export default {
   },
   data(){
       return {
-          path: mdiFileUpload,
           fileRecords: [],
-          fileAgentProps: null,
-          files: [],
-          items: [
-            { title: 'Click Me1' },
-            { title: 'Click Me2' },
-            { title: 'Click Me3' },
-            { title: 'Click Me4' },
-          ],
-          slots: []
+          uploadUrl:'http://localhost:8000/multipart'
       }
   },
   methods: {
@@ -144,9 +45,45 @@ export default {
       handleFileSelected(slotProps) {
         this.slots = slotProps; 
       },
-      handleFileAgentProps(slotProps) {
-        console.log(slotProps)
-        this.fileAgentProps = slotProps;
+      onSelect: function(fileRecords){
+        var file = fileRecords[0]
+
+        // Create a new tus upload
+        var upload = new tus.Upload(file, {
+          // Endpoint is the upload creation URL from your tus server
+          endpoint: this.uploadUrl,
+          // Retry delays will enable tus-js-client to automatically retry on errors
+          retryDelays: [0, 3000, 5000, 10000, 20000],
+          // Attach additional meta data about the file for the server
+          metadata: {
+            filename: file.name,
+            filetype: file.type,
+          },
+          // Callback for errors which cannot be fixed using retries
+          onError: function (error) {
+            console.log('Failed because: ' + error)
+          },
+          // Callback for reporting upload progress
+          onProgress: function (bytesUploaded, bytesTotal) {
+            var percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2)
+            console.log(bytesUploaded, bytesTotal, percentage + '%')
+          },
+          // Callback for once the upload is completed
+          onSuccess: function () {
+            console.log('Download %s from %s', upload.file.name, upload.url)
+          },
+        })
+
+        // Check if there are any previous uploads to continue.
+        upload.findPreviousUploads().then(function (previousUploads) {
+          // Found previous uploads so we select the first one.
+          if (previousUploads.length) {
+            upload.resumeFromPreviousUpload(previousUploads[0])
+          }
+
+          // Start the upload
+          upload.start()
+        })
       }
   }
 };

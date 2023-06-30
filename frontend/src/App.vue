@@ -2,7 +2,8 @@
   <div id="app">
     <!-- <FileAgent /> -->
     <!-- <UploadComponent /> -->
-    <Pond />
+    <!-- <Pond /> -->
+    <Tus />
   </div>
 </template>
 
@@ -10,13 +11,15 @@
 // import FileAgent from "./components/FileAgentPreloading.vue";
 import UploadComponent from "./components/UploadComponent.vue";
 import FileAgent from "./components/FileAgentGmail.vue";
-import Pond from "./components/FilePond.vue"
+import Pond from "./components/FilePond.vue";
+import Tus from "./components/Tus.vue";
 export default {
   name: "App",
   components: {
     FileAgent,
     UploadComponent,
-    Pond
+    Pond,
+    Tus
   }
 };
 </script>

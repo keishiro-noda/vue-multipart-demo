@@ -19,13 +19,16 @@
     "cropperjs": "^1.5.13",
     "filepond": "^4.30.4",
     "filepond-plugin-file-validate-type": "^1.2.8",
+    "resumablejs": "^1.1.0",
     "roboto-fontface": "*",
+    "tus-js-client": "^3.1.0",
     "vue": "^3.2.47",
     "vue-file-agent": "^1.7.2",
     "vue-filepond": "^7.0.3",
     "vue-upload-component": "^2.8.23",
     "vue2-dropzone": "^3.6.0",
     "vuetify": "^3.2.5",
+    "vuex": "^4.1.0",
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {

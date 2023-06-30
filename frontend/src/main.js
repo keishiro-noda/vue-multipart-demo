@@ -5,7 +5,8 @@ import { loadFonts } from './plugins/webfontloader'
 import VueFileAgentNext from '@boindil/vue-file-agent-next'
 import '@boindil/vue-file-agent-next/dist/vue-file-agent-next.css'
 import '@mdi/font/css/materialdesignicons.css' 
-
+import store from "./store";
+import Vuex from 'vuex'
 
 
 loadFonts()
@@ -13,6 +14,8 @@ loadFonts()
 const app = createApp(App)
 app.use(VueFileAgentNext)
 app.use(vuetify)
+app.use(Vuex)
+app.use(store)
 app.config.globalProperties.$formatSize = function(size) {
     if (size > 1024 * 1024 * 1024 * 1024) {
       return (size / 1024 / 1024 / 1024 / 1024).toFixed(2) + ' TB'
