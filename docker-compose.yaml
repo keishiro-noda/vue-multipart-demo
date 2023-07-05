@@ -11,6 +11,7 @@ services:
       - 8000:8000
     volumes:
       - $PWD/backend:/home/guest/my-vue-app/backend
+      # - /home/noda/tuspy-fast-api:/home/guest/my-vue-app/backend
     environment:
       TZ: Asia/Tokyo
     command: bash
