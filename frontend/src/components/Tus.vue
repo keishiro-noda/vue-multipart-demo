@@ -11,22 +11,30 @@
         >
         </v-file-input>
         <v-progress-linear v-model="progressBar" color="cyan"></v-progress-linear>
-          <v-btn :disabled="upload === null" @click="pauseUpload">
-            {{ button }}
-          </v-btn>
-          <v-btn @click="startUpload">
-            Upload
-          </v-btn>
-          <p> {{ progressBar}}%</p>
+        <v-btn :disabled="upload === null" @click="pauseUpload">
+          {{ button }}
+        </v-btn>
+        <v-btn @click="startUpload">
+          Upload
+        </v-btn>
+        <p> {{ progressBar}}%</p>
+
+        <br/>
+
+        <FileUpload mode="basic" :url="uploadUrl" @upload="startUpload" />
       </div>
     </section>
   </template>
   
   <script>
   import * as tus from 'tus-js-client';
+  import FileUpload from 'primevue/fileupload';
   
   export default {
     name: "Tus",
+    components: {
+      FileUpload
+    },
     data() {
       return {
         fileList: [],
@@ -65,8 +73,7 @@
         }
       },
       reset: function() {
-        input.value = ''
-        toggleBtn.textContent = 'start upload'
+        // this.fileList.shift()
         this.upload = null
         this.uploadIsRunning = false
       },
@@ -116,7 +123,7 @@
               window.alert(`Failed because: ${error}`)
             }
 
-            this.reset()
+            data.reset()
           },
           onProgress(bytesUploaded, bytesTotal) {
             const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2)
@@ -124,13 +131,14 @@
             console.log(bytesUploaded, bytesTotal, `${percentage}%`)
           },
           onSuccess() {
-            const anchor = document.createElement('a')
-            anchor.textContent = `Download ${this.upload.file.name} (${this.upload.file.size} bytes)`
-            anchor.href = this.upload.url
-            anchor.className = 'btn btn-success'
-            uploadList.appendChild(anchor)
+            // const anchor = document.createElement('a')
+            // console.log(anchor)
+            // anchor.textContent = `Download ${this.upload.file.name} (${this.upload.file.size} bytes)`
+            // anchor.href = this.upload.url
+            // anchor.className = 'btn btn-success'
+            // uploadList.appendChild(anchor)
 
-            this.reset()
+            data.reset()
           },
         }
 

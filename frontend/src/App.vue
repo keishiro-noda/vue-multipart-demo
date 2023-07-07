@@ -2,8 +2,8 @@
   <div id="app">
     <!-- <FileAgent /> -->
     <!-- <UploadComponent /> -->
-    <!-- <Pond /> -->
-    <Tus />
+    <Pond />
+    <!-- <Tus /> -->
   </div>
 </template>
 

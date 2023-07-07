@@ -1554,6 +1554,11 @@ postcss@^8.4.14, postcss@^8.4.23:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
+primevue@^3.29.2:
+  version "3.29.2"
+  resolved "https://registry.yarnpkg.com/primevue/-/primevue-3.29.2.tgz#de3fd996a84353e6a817023f7c43b3f368b4a121"
+  integrity sha512-zMk1w5AySLR6ipWH2fONKtDabHrvRZhZFI1OdoiBDdMhZpARmWuCXwE/ZFusUh5Te0RBEd3iVCiizjUkSRraRQ==
+
 process-nextick-args@~2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-2.0.1.tgz#7820d9b16120cc55ca9ae7792680ae7dba6d7fe2"
@@ -1956,7 +1961,7 @@ vue-file-agent@^1.7.2:
   dependencies:
     vue "^2.6.11"
 
-vue-filepond@^7.0.3:
+vue-filepond@^7.0.0:
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/vue-filepond/-/vue-filepond-7.0.3.tgz#326cd309ef5b13538ed3233e4fff332cb2b41f8c"
   integrity sha512-pYZ5TxGwFiiiVlRdzlJl0AyHE0/rEZiHm/0sYhIleFjV2VdGWTyxSqErN/AQwrwv32AeiNbui46vVB06Dl07ow==
