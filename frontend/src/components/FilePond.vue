@@ -1,17 +1,56 @@
 <template>
-    <FilePond
-    ref="pond"
-    label-idle="Drop files here..."
-    allow-multiple="true"
-    v-bind:server="myServer"
+  <div class="text-center">
+    <v-dialog
+      v-model="dialog"
+      width="500"
     >
-    <v-list v-slot:file-preview="slotProps">
-     <p>{{ slotProps }}</p>
-  </v-list>
-  </FilePond>
-    <v-btn :disabled="upload === null" @click="pauseUpload">
+    <template v-slot:activator="{ props }">
+      <v-btn color="primary" v-bind="props" >
+       Open Dialog
+      </v-btn>
+     </template>
+
+      <v-card>
+        <FilePond
+        ref="pond"
+        label-idle="Drop files here..."
+        allow-multiple="true"
+        v-bind:server="myServer"
+        >
+        </FilePond>
+      </v-card>
+    </v-dialog>
+  </div>
+
+  <br />
+  
+  <div class="text-center">
+    <v-menu
+      open-on-hover
+    >
+      <template v-slot:activator="{ props }">
+        <v-btn
+          color="primary"
+          v-bind="props"
+        >
+          Dropdown
+        </v-btn>
+      </template>
+
+      <v-card>
+        <FilePond
+        ref="pond"
+        label-idle="Drop files here..."
+        allow-multiple="true"
+        v-bind:server="myServer"
+        >
+        </FilePond>
+      </v-card>
+    </v-menu>
+  </div>
+    <!-- <v-btn :disabled="upload === null" @click="pauseUpload">
       {{ button }}
-    </v-btn>
+    </v-btn> -->
 </template>
   
 <script>
@@ -34,9 +73,17 @@
         uploadIsRunning: false,
         progressBar: 0,
         button: "pause",
+        isError: false,
+        dialog: false,
         myServer: {
           process: (fieldName, file, metadata, load, progress, error) => {
-            // progress(true, 0, file.size);
+
+            if (this.isError && this.upload && !this.uploadIsRunning){
+              this.upload.start()
+              this.uploadIsRunning = true
+              this.isError = false
+              return
+            }
             let filetype = ""
             let data = this
             if (!file) {
@@ -67,18 +114,15 @@
               },
               onError(onerror) {
                 error()
+                data.isError = true
                 if (onerror.originalRequest) {
-                  if (window.confirm(`Failed because: ${onerror}\nDo you want to retry?`)) {
-                    this.upload.start()
-                    this.uploadIsRunning = true
-                    return
+                  if (data.upload) {
+                    data.upload.abort()
+                    data.uploadIsRunning = false
                   }
                 } else {
                   window.alert(`Failed because: ${onerror}`)
                 }
-                progress(false, file.size, file.size);
-
-                data.reset()
               },
               onProgress(bytesUploaded, bytesTotal) {
                 const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2)
@@ -130,6 +174,13 @@
         this.uploadIsRunning = false
       },
       startUpload: function(file) {
+        if (this.isError && this.upload && !this.uploadIsRunning){
+          this.upload.start()
+          this.uploadIsRunning = true
+          this.isError = false
+          return
+        }
+
         let filetype = ""
         let data = this
         if (!file) {
@@ -159,17 +210,15 @@
             type: filetype,
           },
           onError(error) {
+            data.isError = true
             if (error.originalRequest) {
-              if (window.confirm(`Failed because: ${error}\nDo you want to retry?`)) {
-                this.upload.start()
-                this.uploadIsRunning = true
-                return
+              if (data.upload) {
+                data.upload.abort()
+                data.uploadIsRunning = false
               }
             } else {
               window.alert(`Failed because: ${error}`)
             }
-
-            data.reset()
           },
           onProgress(bytesUploaded, bytesTotal) {
             const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2)
@@ -211,8 +260,18 @@
 </script>
 
 <style>
+.custom-progress-bar {
+  width: 100%;
+  height: 20px;
+  background-color: #f0f0f0;
+}
 
-/* ファイル要素内のテキストのスタイル変更 */
+.progress-bar {
+  height: 100%;
+  background-color: blue;
+}
 
-
+.filepond--item-panel {
+  background-color: #555;
+}
 </style>

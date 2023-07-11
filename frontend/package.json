@@ -25,7 +25,7 @@
     "tus-js-client": "^3.1.0",
     "vue": "^3.2.47",
     "vue-file-agent": "^1.7.2",
-    "vue-filepond": "^7.0.0",
+    "vue-filepond": "^7.0.3",
     "vue-upload-component": "^2.8.23",
     "vue2-dropzone": "^3.6.0",
     "vuetify": "^3.2.5",

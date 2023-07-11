@@ -45,7 +45,8 @@
         upload: null,
         uploadIsRunning: false,
         progressBar: 0,
-        button: "pause"
+        button: "pause",
+        isError: false
       }
     },
     methods: {
@@ -78,6 +79,12 @@
         this.uploadIsRunning = false
       },
       startUpload: function() {
+        if (this.isError && this.upload && !this.uploadIsRunning){
+          this.upload.start()
+          this.uploadIsRunning = true
+          this.isError = false
+          return
+        }
         let filetype = ""
         let data = this
         const file = this.fileList[0]
@@ -113,17 +120,15 @@
             type: filetype,
           },
           onError(error) {
+            data.isError = true
             if (error.originalRequest) {
-              if (window.confirm(`Failed because: ${error}\nDo you want to retry?`)) {
-                this.upload.start()
-                this.uploadIsRunning = true
-                return
+              if (data.upload) {
+                data.upload.abort()
+                data.uploadIsRunning = false
               }
             } else {
               window.alert(`Failed because: ${error}`)
             }
-
-            data.reset()
           },
           onProgress(bytesUploaded, bytesTotal) {
             const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2)

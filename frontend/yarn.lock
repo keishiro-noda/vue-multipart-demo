@@ -1961,7 +1961,7 @@ vue-file-agent@^1.7.2:
   dependencies:
     vue "^2.6.11"
 
-vue-filepond@^7.0.0:
+vue-filepond@^7.0.3:
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/vue-filepond/-/vue-filepond-7.0.3.tgz#326cd309ef5b13538ed3233e4fff332cb2b41f8c"
   integrity sha512-pYZ5TxGwFiiiVlRdzlJl0AyHE0/rEZiHm/0sYhIleFjV2VdGWTyxSqErN/AQwrwv32AeiNbui46vVB06Dl07ow==
